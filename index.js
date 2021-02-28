@@ -40,6 +40,38 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(helmet({ contentSecurityPolicy: false }));
 
+const secret = "thisshouldbeabettersecret"
+
+const sessionConfig = {
+    // store,
+    name: "custom-session",
+    secret: secret,
+    // sure: true,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        HttpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+};
+
+app.use(session(sessionConfig));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
+});
+
 app.get("/", (req, res) => {
     res.send("Home page!");
 });
@@ -63,7 +95,27 @@ app.post("/register", async (req, res) => {
         // req.flash("error", error.message);
         res.send(`ERROR: ${error}`);
     }
+});
+
+app.get("/login", (req, res) => {
+    res.render("login");
+});
+
+app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), (req, res) => {
+    req.flash("success", "You have successfully logged in!");
+    res.redirect("/login");
+});
+
+app.get("/logout", (req, res) => {
+    req.logout();
+    req.flash("success", "Goodbye! Please ome again! I'm nothing without you!!");
+    res.redirect("/login");
 })
+
+app.use((err, req, res, next) => {
+    if (!err.message) err.message = "Oh no, this sucks!!!";
+    res.render("errors", { err });
+});
 
 app.listen(3000, () => {
     console.log("Listening on port 3000...")
