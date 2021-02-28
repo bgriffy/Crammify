@@ -73,7 +73,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-    res.send("Home page!");
+    res.render("home");
 });
 
 app.get("/register", (req, res) => {
