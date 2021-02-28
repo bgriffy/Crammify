@@ -10,6 +10,7 @@ const LocalStrategy = require("passport-local");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const User = require("./models/user");
+const Workspace = require("./models/workspace");
 
 const dbUrl = "mongodb://localhost:27017/crammify";
 
@@ -110,7 +111,16 @@ app.get("/logout", (req, res) => {
     req.logout();
     req.flash("success", "Goodbye! Please ome again! I'm nothing without you!!");
     res.redirect("/login");
-})
+});
+
+app.get("/workspaces", async (req, res) => {
+    const workspaces = await Workspace.find({});
+    res.render("index", { workspaces });
+});
+
+app.get("/workspaces", (req, res) => {
+
+});
 
 app.use((err, req, res, next) => {
     if (!err.message) err.message = "Oh no, this sucks!!!";
