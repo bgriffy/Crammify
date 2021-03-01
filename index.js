@@ -118,7 +118,7 @@ app.get("/workspaces", async (req, res) => {
     res.render("index", { workspaces });
 });
 
-app.get("/workspaces", (req, res) => {
+app.POST("/workspaces", (req, res) => {
 
 });
 
