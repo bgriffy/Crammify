@@ -11,6 +11,8 @@ const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const User = require("./models/user");
 const Workspace = require("./models/workspace");
+const Review = require("./models/review");
+
 
 const dbUrl = "mongodb://localhost:27017/crammify";
 
@@ -151,6 +153,17 @@ app.put("/workspaces/:id", async (req, res) => {
     const {id} = req.params; 
     const workspace = await Workspace.findByIdAndUpdate(id, { ...req.body.workspace });
     req.flash("success", "Workspace has been successfully deleted.");
+    res.redirect(`/workspaces/${id}`);
+});
+
+app.post("/workspaces/:id/reviews", async (req, res) => {
+    const {id} = req.params; 
+    const workspace = await Workspace.findById(id);
+    const newReview = new Review(req.body.review);
+    await newReview.save();
+    workspace.reviews.push(newReview);
+    await workspace.save();
+    req.flash("success", "Your review has been added successfully.");
     res.redirect(`/workspaces/${id}`);
 });
 
