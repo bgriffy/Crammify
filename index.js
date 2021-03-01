@@ -78,7 +78,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-    res.render("register");
+    res.render("users/register");
 });
 
 app.post("/register", async (req, res) => {
@@ -97,7 +97,7 @@ app.post("/register", async (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-    res.render("login");
+    res.render("users/login");
 });
 
 app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), (req, res) => {
@@ -113,7 +113,7 @@ app.get("/logout", (req, res) => {
 
 app.get("/workspaces", async (req, res) => {
     const workspaces = await Workspace.find({});
-    res.render("index", { workspaces });
+    res.render("workspaces/index", { workspaces });
 });
 
 app.post("/workspaces", (req, res) => {
@@ -123,7 +123,7 @@ app.post("/workspaces", (req, res) => {
 app.get("/workspaces/:id", async (req, res) => {
     const {id} = req.params; 
     const workspace = await Workspace.findById(id);   
-    res.render("show", {workspace}); 
+    res.render("workspaces/show", {workspace}); 
 });
 
 app.get("/workspaces/:id/edit", async(req, res) => {
@@ -133,7 +133,7 @@ app.get("/workspaces/:id/edit", async(req, res) => {
         req.flash("error", "Workspace does not exist.");
         return res.redirect("/workspaces");
     }
-    res.render("edit", {workspace}); 
+    res.render("workspaces/edit", {workspace}); 
 });
 
 app.put("/workspaces/:id", async (req, res) => {
