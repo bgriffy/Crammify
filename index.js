@@ -124,7 +124,6 @@ app.get("/workspaces/new", (req, res) => {
 
 app.post("/workspaces", async (req, res) => {
     const newWorkspace = new Workspace(req.body.workspace);
-    console.log(`new work space: ${newWorkspace}`);
     await newWorkspace.save();
     if (!newWorkspace) {
         req.flash("error", "Could not save workspace");
@@ -141,7 +140,6 @@ app.get("/workspaces/:id", async (req, res) => {
             path: "author"
         }
     });
-    console.log(`workspace for show page: ${workspace}`);
     res.render("workspaces/show", { workspace });
 });
 
@@ -176,6 +174,14 @@ app.post("/workspaces/:id/reviews", async (req, res) => {
 
     req.flash("success", "Your review has been added successfully.");
     res.redirect(`/workspaces/${id}`);
+});
+
+app.delete("/workspaces/:workspaceID/reviews/:reviewID", async (req, res) => {
+    const { workspaceID, reviewID } = req.params;
+    await Workspace.findByIdAndUpdate(workspaceID, { $pull: { reviews: reviewID } });
+    await Review.findByIdAndDelete(reviewID);
+    req.flash("success", "Review has been successfully deleted.");
+    res.redirect(`/workspaces/${workspaceID}`);
 });
 
 app.delete("/workspaces/:id", async (req, res) => {
