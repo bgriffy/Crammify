@@ -116,8 +116,19 @@ app.get("/workspaces", async (req, res) => {
     res.render("workspaces/index", { workspaces });
 });
 
-app.post("/workspaces", (req, res) => {
-    //ADD NEW WORKSPACE
+app.get("/workspaces/new", (req, res) => {
+    res.render("workspaces/new");
+});
+
+app.post("/workspaces", async (req, res) => {
+    const newWorkspace = new Workspace(req.body.workspace); 
+    console.log(`new work space: ${newWorkspace}`);
+    await newWorkspace.save(); 
+    if (!newWorkspace) {
+        req.flash("error", "Could not save workspace");
+        return res.redirect("/workspaces/new");
+    }
+    res.redirect(`/workspaces/${newWorkspace._id}`); 
 });
 
 app.get("/workspaces/:id", async (req, res) => {
