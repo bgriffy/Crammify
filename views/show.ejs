@@ -1,0 +1,50 @@
+<% layout('layouts/boilerplate') %>
+    <link rel="stylesheet" href="/stylesheets/stars.css">
+
+    <div class="row">
+        <div class="col-6">
+            <div id="workspaceCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <% workspace.images.forEach((img, i) => {%>
+                        <div class="carousel-item <%= i === 0 ? "active" : ''%>">
+                            <img src="<%= img.url %>" class="d-block w-100" alt="">
+                        </div>
+                    <% }) %> 
+                </div>
+                <% if(workspace.images.length > 1){ %> 
+                    <button class="carousel-control-prev" type="button" data-bs-target="#workspaceCarousel"  data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#workspaceCarousel"  data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                    </button>
+                <% } %> 
+              </div>
+            <div class="card mb-5">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <%= workspace.title %>
+                    </h5>
+                    <p class="card-text">
+                        <%= workspace.description %>
+                    </p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item text-muted">
+                        <%= workspace.location %>
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <a href="/workspaces/<%= workspace._id %>/edit" class="card-link btn btn-primary">Edit</a>
+                    <form class="d-inline" action="/workspaces/<%=workspace._id%>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger card-link">Delete</button>
+                    </form>
+                </div>
+                <div class="card-footer text-muted">
+                    <a href="/workspaces">All workspaces</a>
+                </div>
+            </div>
+        </div>
+    </div>

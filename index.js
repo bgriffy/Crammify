@@ -86,15 +86,13 @@ app.post("/register", async (req, res) => {
         const { email, username, password } = req.body;
         const user = new User({ email, username });
         const registeredUser = await User.register(user, password);
-        res.send("It worked!!");
-        // req.login(registeredUser, err => {
-        //     if (err) return next(err);
-        //     req.flash("success", "Welcome to Crammify!");
-        //     res.redirect("/campgrounds");
-        // })
+        req.login(registeredUser, err => {
+            if (err) return next(err);
+            req.flash("success", "Welcome to Crammify!");
+            res.redirect("/workspaces");
+        })
     } catch (error) {
-        // req.flash("error", error.message);
-        res.send(`ERROR: ${error}`);
+        req.flash("error", error.message);
     }
 });
 
@@ -104,13 +102,13 @@ app.get("/login", (req, res) => {
 
 app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), (req, res) => {
     req.flash("success", "You have successfully logged in!");
-    res.redirect("/login");
+    res.redirect("/workspaces");
 });
 
 app.get("/logout", (req, res) => {
     req.logout();
-    req.flash("success", "Goodbye! Please ome again! I'm nothing without you!!");
-    res.redirect("/login");
+    req.flash("success", "Goodbye! Please come again! I'm nothing without you!!");
+    res.redirect("/workspaces");
 });
 
 app.get("/workspaces", async (req, res) => {
@@ -118,8 +116,38 @@ app.get("/workspaces", async (req, res) => {
     res.render("index", { workspaces });
 });
 
-app.POST("/workspaces", (req, res) => {
+app.post("/workspaces", (req, res) => {
+    //ADD NEW WORKSPACE
+});
 
+app.get("/workspaces/:id", async (req, res) => {
+    const {id} = req.params; 
+    const workspace = await Workspace.findById(id);   
+    res.render("show", {workspace}); 
+});
+
+app.get("/workspaces/:id/edit", async(req, res) => {
+    const {id} = req.params; 
+    const workspace = await Workspace.findById(id);   
+    if (!workspace) {
+        req.flash("error", "Workspace does not exist.");
+        return res.redirect("/workspaces");
+    }
+    res.render("edit", {workspace}); 
+});
+
+app.put("/workspaces/:id", async (req, res) => {
+    const {id} = req.params; 
+    const workspace = await Workspace.findByIdAndUpdate(id, { ...req.body.workspace });
+    req.flash("success", "Workspace has been successfully deleted.");
+    res.redirect(`/workspaces/${id}`);
+});
+
+app.delete("/workspaces/:id", async (req, res) => {
+    const {id} = req.params; 
+    await Workspace.findByIdAndDelete(id);   
+    req.flash("success", "Workspace has been successfully deleted.");
+    res.redirect("/workspaces"); 
 });
 
 app.use((err, req, res, next) => {
