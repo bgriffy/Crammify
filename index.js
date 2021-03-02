@@ -12,6 +12,7 @@ const helmet = require("helmet");
 const User = require("./models/user");
 const Workspace = require("./models/workspace");
 const Review = require("./models/review");
+const { isLoggedIn, validateWorkspace, isAuthor, validateReview, isReviewAuthor } = require("./middleware");
 
 
 const dbUrl = "mongodb://localhost:27017/crammify";
@@ -95,6 +96,7 @@ app.post("/register", async (req, res) => {
         })
     } catch (error) {
         req.flash("error", error.message);
+        res.redirect("/register");
     }
 });
 
@@ -122,7 +124,7 @@ app.get("/workspaces/new", (req, res) => {
     res.render("workspaces/new");
 });
 
-app.post("/workspaces", async (req, res) => {
+app.post("/workspaces", isLoggedIn, async (req, res) => {
     const newWorkspace = new Workspace(req.body.workspace);
     await newWorkspace.save();
     if (!newWorkspace) {
