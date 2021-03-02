@@ -20,6 +20,7 @@ const seedDB = async () => {
         const rando = Math.floor(Math.random() * 1000);
         const newSpace = new Workspace({
             location: `${cities[rando].city}, ${cities[rando].state}`,
+            author: "603c4d23a8af4d5144793151",
             title: `${sample(descriptors)} ${sample(places)}`,
             images: [
                 {

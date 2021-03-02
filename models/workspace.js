@@ -12,6 +12,10 @@ const workspaceSchema = new Schema({
     description: String,
     location: String,
     images: [imageSchema], 
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    },
     reviews: [
         {
             type: Schema.Types.ObjectId, 

@@ -80,6 +80,9 @@ app.get("/", (req, res) => {
     res.render("home");
 });
 
+
+//----USER ROUTES----
+
 app.get("/register", (req, res) => {
     res.render("users/register");
 });
@@ -115,17 +118,21 @@ app.get("/logout", (req, res) => {
     res.redirect("/workspaces");
 });
 
+
+//----WORKSPACE ROUTES----
+
 app.get("/workspaces", async (req, res) => {
     const workspaces = await Workspace.find({});
     res.render("workspaces/index", { workspaces });
 });
 
-app.get("/workspaces/new", (req, res) => {
+app.get("/workspaces/new", isLoggedIn, (req, res) => {
     res.render("workspaces/new");
 });
 
-app.post("/workspaces", isLoggedIn, async (req, res) => {
+app.post("/workspaces", isLoggedIn, validateWorkspace, async (req, res) => {
     const newWorkspace = new Workspace(req.body.workspace);
+    newWorkspace.author = req.user._id; 
     await newWorkspace.save();
     if (!newWorkspace) {
         req.flash("error", "Could not save workspace");
@@ -141,11 +148,11 @@ app.get("/workspaces/:id", async (req, res) => {
         populate: {
             path: "author"
         }
-    });
+    }).populate("author");
     res.render("workspaces/show", { workspace });
 });
 
-app.get("/workspaces/:id/edit", async (req, res) => {
+app.get("/workspaces/:id/edit", isLoggedIn, async (req, res) => {
     const { id } = req.params;
     const workspace = await Workspace.findById(id);
     if (!workspace) {
@@ -155,14 +162,24 @@ app.get("/workspaces/:id/edit", async (req, res) => {
     res.render("workspaces/edit", { workspace });
 });
 
-app.put("/workspaces/:id", async (req, res) => {
+app.put("/workspaces/:id", isLoggedIn, isAuthor, validateWorkspace, async (req, res) => {
     const { id } = req.params;
     const workspace = await Workspace.findByIdAndUpdate(id, { ...req.body.workspace });
     req.flash("success", "Workspace has been successfully deleted.");
     res.redirect(`/workspaces/${id}`);
 });
 
-app.post("/workspaces/:id/reviews", async (req, res) => {
+app.delete("/workspaces/:id", isLoggedIn, isAuthor, async (req, res) => {
+    const { id } = req.params;
+    await Workspace.findByIdAndDelete(id);
+    req.flash("success", "Workspace has been successfully deleted.");
+    res.redirect("/workspaces");
+});
+
+
+//----REVIEW ROUTES----
+
+app.post("/workspaces/:id/reviews", isLoggedIn, validateReview, async (req, res) => {
     const { id } = req.params;
     const workspace = await Workspace.findById(id);
     const newReview = new Review(req.body.review);
@@ -178,19 +195,12 @@ app.post("/workspaces/:id/reviews", async (req, res) => {
     res.redirect(`/workspaces/${id}`);
 });
 
-app.delete("/workspaces/:workspaceID/reviews/:reviewID", async (req, res) => {
+app.delete("/workspaces/:workspaceID/reviews/:reviewID", isLoggedIn, isReviewAuthor, async (req, res) => {
     const { workspaceID, reviewID } = req.params;
     await Workspace.findByIdAndUpdate(workspaceID, { $pull: { reviews: reviewID } });
     await Review.findByIdAndDelete(reviewID);
     req.flash("success", "Review has been successfully deleted.");
     res.redirect(`/workspaces/${workspaceID}`);
-});
-
-app.delete("/workspaces/:id", async (req, res) => {
-    const { id } = req.params;
-    await Workspace.findByIdAndDelete(id);
-    req.flash("success", "Workspace has been successfully deleted.");
-    res.redirect("/workspaces");
 });
 
 app.use((err, req, res, next) => {

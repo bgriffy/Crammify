@@ -26,11 +26,9 @@ const Joi = BaseJOI.extend(extension);
 module.exports.workspaceValidationSchema = Joi.object({
     workspace: Joi.object({
         title: Joi.string().required().escapeHTML(),
-        price: Joi.number().required().min(0),
         location: Joi.string().required().escapeHTML(),
         description: Joi.string().required().escapeHTML()
     }).required(),
-    deleteImages: Joi.array()
 });
 
 module.exports.reviewValidationSchema = Joi.object({
