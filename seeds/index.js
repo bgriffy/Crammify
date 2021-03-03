@@ -15,18 +15,16 @@ db.once('open', () => {
 
 const sample = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-const sampleAuthor = () => User.findOne({ "username": "bob" });
+const getSampleAuthor = () => User.findOne({ "username": "bob" });
 
 
 const seedDB = async () => {
     await Workspace.deleteMany({});
-    // const testAuthor = sampleAuthor();
-    // console.log(`SAMPLE AUTHOR: ${testAuthor}`);
-    const testAuthor = await sampleAuthor();
-    console.log(`SAMPLE AUTHOR: ${testAuthor}`);
+    const sampleAuthor = await getSampleAuthor();
     for (let i = 0; i < 300; i++) {
         const rando = Math.floor(Math.random() * 1000);
         const newSpace = new Workspace({
+            author: sampleAuthor._id,
             location: `${cities[rando].city}, ${cities[rando].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             images: [],

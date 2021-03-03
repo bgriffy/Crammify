@@ -2,8 +2,7 @@
     <div class="row">
         <h1 class="text-center">Edit Workspace</h1>
         <div class="col-6 offset-3">
-            <form action="/workspaces/<%= workspace._id %>?_method=PUT" method="POST" novalidate class="validated-form"
-                enctype="multipart/form-data">
+            <form action="/workspaces/<%= workspace._id %>?_method=PUT" method="POST" enctype="multipart/form-data" novalidate class="validated-form">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
                     <input type="text" id="title" class="form-control" name="workspace[title]" required
@@ -32,6 +31,6 @@
 
                 <div class="mb-3"><button class="btn btn-info">Update workspace</button></div>
             </form>
-            <a href="/workspaces/<%= workspace._id %> ">Back To workspace</a>
+            <a href="/workspaces/<%= workspace._id %>">Back To workspace</a>
         </div>
     </div>

@@ -1,3 +1,7 @@
+if(process.env.NODE_ !== "production"){
+    require("dotenv").config();
+}
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -168,8 +172,9 @@ app.get("/workspaces/:id/edit", isLoggedIn, async (req, res) => {
 app.put("/workspaces/:id", isLoggedIn, isAuthor, upload.array("image"), validateWorkspace, async (req, res) => {
     const { id } = req.params;
     const workspace = await Workspace.findByIdAndUpdate(id, { ...req.body.workspace });
-    console.log(`req files: ${req.files}`);
-    workspace.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    const images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    workspace.images.push(...images);
+    await workspace.save();
     req.flash("success", "Workspace has been successfully updated.");
     res.redirect(`/workspaces/${id}`);
 });
