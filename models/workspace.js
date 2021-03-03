@@ -4,34 +4,35 @@ const review = require("./review");
 const opts = { toJSON: { virtuals: true } };
 
 const imageSchema = new Schema({
-    url: String
+    url: String,
+    filename: String
 });
 
 const workspaceSchema = new Schema({
     title: String,
     description: String,
     location: String,
-    images: [imageSchema], 
+    images: [imageSchema],
     author: {
         type: Schema.Types.ObjectId,
         ref: "User"
     },
     reviews: [
         {
-            type: Schema.Types.ObjectId, 
+            type: Schema.Types.ObjectId,
             ref: "Review"
         }
     ]
 }, opts);
 
-workspaceSchema.post("findOneAndDelete", async function(doc){
-    if(doc){
+workspaceSchema.post("findOneAndDelete", async function (doc) {
+    if (doc) {
         await review.deleteMany({
             _id: {
                 $in: doc.reviews
             }
-        }); 
+        });
     }
-}); 
+});
 
 module.exports = mongoose.model("Workspace", workspaceSchema); 

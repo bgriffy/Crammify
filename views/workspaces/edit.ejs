@@ -2,8 +2,8 @@
     <div class="row">
         <h1 class="text-center">Edit Workspace</h1>
         <div class="col-6 offset-3">
-            <form action="/workspaces/<%= workspace._id %>?_method=PUT" method="POST" novalidate
-                class="validated-form">
+            <form action="/workspaces/<%= workspace._id %>?_method=PUT" method="POST" novalidate class="validated-form"
+                enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
                     <input type="text" id="title" class="form-control" name="workspace[title]" required
@@ -25,10 +25,10 @@
                     <div class="valid-feedback">Looks good!</div>
                 </div>
 
-                <!-- <div class="mb-3">
+                <div class="mb-3">
                     <label for="formFile" class="form-label">Add images</label>
                     <input class="form-control" type="file" id="formFile" name="image" multiple>
-                </div> -->
+                </div>
 
                 <div class="mb-3"><button class="btn btn-info">Update workspace</button></div>
             </form>

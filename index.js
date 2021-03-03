@@ -13,6 +13,9 @@ const User = require("./models/user");
 const Workspace = require("./models/workspace");
 const Review = require("./models/review");
 const { isLoggedIn, validateWorkspace, isAuthor, validateReview, isReviewAuthor } = require("./middleware");
+const multer = require("multer");
+const { storage } = require("./cloudinary");
+const upload = multer({ storage });
 
 
 const dbUrl = "mongodb://localhost:27017/crammify";
@@ -132,7 +135,7 @@ app.get("/workspaces/new", isLoggedIn, (req, res) => {
 
 app.post("/workspaces", isLoggedIn, validateWorkspace, async (req, res) => {
     const newWorkspace = new Workspace(req.body.workspace);
-    newWorkspace.author = req.user._id; 
+    newWorkspace.author = req.user._id;
     await newWorkspace.save();
     if (!newWorkspace) {
         req.flash("error", "Could not save workspace");
@@ -162,10 +165,12 @@ app.get("/workspaces/:id/edit", isLoggedIn, async (req, res) => {
     res.render("workspaces/edit", { workspace });
 });
 
-app.put("/workspaces/:id", isLoggedIn, isAuthor, validateWorkspace, async (req, res) => {
+app.put("/workspaces/:id", isLoggedIn, isAuthor, upload.array("image"), validateWorkspace, async (req, res) => {
     const { id } = req.params;
     const workspace = await Workspace.findByIdAndUpdate(id, { ...req.body.workspace });
-    req.flash("success", "Workspace has been successfully deleted.");
+    console.log(`req files: ${req.files}`);
+    workspace.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    req.flash("success", "Workspace has been successfully updated.");
     res.redirect(`/workspaces/${id}`);
 });
 
