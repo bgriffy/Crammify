@@ -29,6 +29,16 @@
                     <input class="form-control" type="file" id="formFile" name="image" multiple>
                 </div>
 
+                <div class="mb-3">
+                    <% workspace.images.forEach(function(img, index){ %>
+                        <img src="<%= img.thumbnail %>" class="img-thumbnail" alt="">
+                        <div class="form-check-inline">
+                            <input type="checkbox" name="deleteImages[]" id="image-<%=index%>" value="<%=img.filename%>">
+                        </div>
+                        <label for="image-<%=index%>">Delete</label>
+                    <% }) %> 
+                </div>
+
                 <div class="mb-3"><button class="btn btn-info">Update workspace</button></div>
             </form>
             <a href="/workspaces/<%= workspace._id %>">Back To workspace</a>

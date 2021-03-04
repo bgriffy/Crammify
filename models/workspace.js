@@ -8,6 +8,10 @@ const imageSchema = new Schema({
     filename: String
 });
 
+imageSchema.virtual("thumbnail").get(function() {
+    return this.url.replace("/upload", "/upload/w_200,h_150"); 
+});
+
 const workspaceSchema = new Schema({
     title: String,
     description: String,

@@ -18,8 +18,9 @@ const Workspace = require("./models/workspace");
 const Review = require("./models/review");
 const { isLoggedIn, validateWorkspace, isAuthor, validateReview, isReviewAuthor } = require("./middleware");
 const multer = require("multer");
-const { storage } = require("./cloudinary");
+const { storage, cloudinary } = require("./cloudinary");
 const upload = multer({ storage });
+const catchAsync = require("./utils/CatchAsync");
 
 
 const dbUrl = "mongodb://localhost:27017/crammify";
@@ -94,7 +95,7 @@ app.get("/register", (req, res) => {
     res.render("users/register");
 });
 
-app.post("/register", async (req, res) => {
+app.post("/register", catchAsync(async (req, res) => {
     try {
         const { email, username, password } = req.body;
         const user = new User({ email, username });
@@ -108,7 +109,7 @@ app.post("/register", async (req, res) => {
         req.flash("error", error.message);
         res.redirect("/register");
     }
-});
+}));
 
 app.get("/login", (req, res) => {
     res.render("users/login");
@@ -128,16 +129,16 @@ app.get("/logout", (req, res) => {
 
 //----WORKSPACE ROUTES----
 
-app.get("/workspaces", async (req, res) => {
+app.get("/workspaces", catchAsync(async (req, res) => {
     const workspaces = await Workspace.find({});
     res.render("workspaces/index", { workspaces });
-});
+}));
 
 app.get("/workspaces/new", isLoggedIn, (req, res) => {
     res.render("workspaces/new");
 });
 
-app.post("/workspaces", isLoggedIn, validateWorkspace, async (req, res) => {
+app.post("/workspaces", isLoggedIn, validateWorkspace, catchAsync(async (req, res) => {
     const newWorkspace = new Workspace(req.body.workspace);
     newWorkspace.author = req.user._id;
     await newWorkspace.save();
@@ -146,9 +147,9 @@ app.post("/workspaces", isLoggedIn, validateWorkspace, async (req, res) => {
         return res.redirect("/workspaces/new");
     }
     res.redirect(`/workspaces/${newWorkspace._id}`);
-});
+}));
 
-app.get("/workspaces/:id", async (req, res) => {
+app.get("/workspaces/:id", catchAsync(async (req, res) => {
     const { id } = req.params;
     const workspace = await Workspace.findById(id).populate({
         path: "reviews",
@@ -157,7 +158,7 @@ app.get("/workspaces/:id", async (req, res) => {
         }
     }).populate("author");
     res.render("workspaces/show", { workspace });
-});
+}));
 
 app.get("/workspaces/:id/edit", isLoggedIn, async (req, res) => {
     const { id } = req.params;
@@ -169,27 +170,37 @@ app.get("/workspaces/:id/edit", isLoggedIn, async (req, res) => {
     res.render("workspaces/edit", { workspace });
 });
 
-app.put("/workspaces/:id", isLoggedIn, isAuthor, upload.array("image"), validateWorkspace, async (req, res) => {
+app.put("/workspaces/:id", isLoggedIn, isAuthor, upload.array("image"), validateWorkspace, catchAsync(async (req, res) => {
     const { id } = req.params;
     const workspace = await Workspace.findByIdAndUpdate(id, { ...req.body.workspace });
     const images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    const imagesToDelete = req.body.deleteImages;
+
+    if(imagesToDelete){
+        for(let filename of imagesToDelete) {
+            await cloudinary.uploader.destroy(filename); 
+        }
+        await workspace.updateOne({$pull: {images: {filename: {$in: imagesToDelete} } } } )
+    }
+
     workspace.images.push(...images);
     await workspace.save();
+
     req.flash("success", "Workspace has been successfully updated.");
     res.redirect(`/workspaces/${id}`);
-});
+}));
 
-app.delete("/workspaces/:id", isLoggedIn, isAuthor, async (req, res) => {
+app.delete("/workspaces/:id", isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     await Workspace.findByIdAndDelete(id);
     req.flash("success", "Workspace has been successfully deleted.");
     res.redirect("/workspaces");
-});
+}));
 
 
 //----REVIEW ROUTES----
 
-app.post("/workspaces/:id/reviews", isLoggedIn, validateReview, async (req, res) => {
+app.post("/workspaces/:id/reviews", isLoggedIn, validateReview, catchAsync(async (req, res) => {
     const { id } = req.params;
     const workspace = await Workspace.findById(id);
     const newReview = new Review(req.body.review);
@@ -203,15 +214,15 @@ app.post("/workspaces/:id/reviews", isLoggedIn, validateReview, async (req, res)
 
     req.flash("success", "Your review has been added successfully.");
     res.redirect(`/workspaces/${id}`);
-});
+}));
 
-app.delete("/workspaces/:workspaceID/reviews/:reviewID", isLoggedIn, isReviewAuthor, async (req, res) => {
+app.delete("/workspaces/:workspaceID/reviews/:reviewID", isLoggedIn, isReviewAuthor, catchAsync(async (req, res) => {
     const { workspaceID, reviewID } = req.params;
     await Workspace.findByIdAndUpdate(workspaceID, { $pull: { reviews: reviewID } });
     await Review.findByIdAndDelete(reviewID);
     req.flash("success", "Review has been successfully deleted.");
     res.redirect(`/workspaces/${workspaceID}`);
-});
+}));
 
 app.use((err, req, res, next) => {
     if (!err.message) err.message = "Oh no, this sucks!!!";

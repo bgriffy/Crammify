@@ -29,6 +29,7 @@ module.exports.workspaceValidationSchema = Joi.object({
         location: Joi.string().required().escapeHTML(),
         description: Joi.string().required().escapeHTML()
     }).required(),
+    deleteImages: Joi.array()
 });
 
 module.exports.reviewValidationSchema = Joi.object({
