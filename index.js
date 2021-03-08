@@ -21,7 +21,10 @@ const multer = require("multer");
 const { storage, cloudinary } = require("./cloudinary");
 const upload = multer({ storage });
 const catchAsync = require("./utils/CatchAsync");
-
+//controllers
+const workspaces = require("./controllers/workspaces");
+const reviews = require("./controllers/reviews");
+const users = require("./controllers/users");
 
 const dbUrl = "mongodb://localhost:27017/crammify";
 
@@ -56,9 +59,9 @@ const secret = "thisshouldbeabettersecret"
 
 const sessionConfig = {
     // store,
+    // secure: true,
     name: "custom-session",
     secret: secret,
-    // sure: true,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -90,139 +93,24 @@ app.get("/", (req, res) => {
 
 
 //----USER ROUTES----
-
-app.get("/register", (req, res) => {
-    res.render("users/register");
-});
-
-app.post("/register", catchAsync(async (req, res) => {
-    try {
-        const { email, username, password } = req.body;
-        const user = new User({ email, username });
-        const registeredUser = await User.register(user, password);
-        req.login(registeredUser, err => {
-            if (err) return next(err);
-            req.flash("success", "Welcome to Crammify!");
-            res.redirect("/workspaces");
-        })
-    } catch (error) {
-        req.flash("error", error.message);
-        res.redirect("/register");
-    }
-}));
-
-app.get("/login", (req, res) => {
-    res.render("users/login");
-});
-
-app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), (req, res) => {
-    req.flash("success", "You have successfully logged in!");
-    res.redirect("/workspaces");
-});
-
-app.get("/logout", (req, res) => {
-    req.logout();
-    req.flash("success", "Goodbye! Please come again! I'm nothing without you!!");
-    res.redirect("/workspaces");
-});
-
+app.get("/register", users.renderRegisterForm);
+app.post("/register", catchAsync(users.registerUser));
+app.get("/login", users.renderLoginForm);
+app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), users.login);
+app.get("/logout", users.logout);
 
 //----WORKSPACE ROUTES----
-
-app.get("/workspaces", catchAsync(async (req, res) => {
-    const workspaces = await Workspace.find({});
-    res.render("workspaces/index", { workspaces });
-}));
-
-app.get("/workspaces/new", isLoggedIn, (req, res) => {
-    res.render("workspaces/new");
-});
-
-app.post("/workspaces", isLoggedIn, validateWorkspace, catchAsync(async (req, res) => {
-    const newWorkspace = new Workspace(req.body.workspace);
-    newWorkspace.author = req.user._id;
-    await newWorkspace.save();
-    if (!newWorkspace) {
-        req.flash("error", "Could not save workspace");
-        return res.redirect("/workspaces/new");
-    }
-    res.redirect(`/workspaces/${newWorkspace._id}`);
-}));
-
-app.get("/workspaces/:id", catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const workspace = await Workspace.findById(id).populate({
-        path: "reviews",
-        populate: {
-            path: "author"
-        }
-    }).populate("author");
-    res.render("workspaces/show", { workspace });
-}));
-
-app.get("/workspaces/:id/edit", isLoggedIn, async (req, res) => {
-    const { id } = req.params;
-    const workspace = await Workspace.findById(id);
-    if (!workspace) {
-        req.flash("error", "Workspace does not exist.");
-        return res.redirect("/workspaces");
-    }
-    res.render("workspaces/edit", { workspace });
-});
-
-app.put("/workspaces/:id", isLoggedIn, isAuthor, upload.array("image"), validateWorkspace, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const workspace = await Workspace.findByIdAndUpdate(id, { ...req.body.workspace });
-    const images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    const imagesToDelete = req.body.deleteImages;
-
-    if(imagesToDelete){
-        for(let filename of imagesToDelete) {
-            await cloudinary.uploader.destroy(filename); 
-        }
-        await workspace.updateOne({$pull: {images: {filename: {$in: imagesToDelete} } } } )
-    }
-
-    workspace.images.push(...images);
-    await workspace.save();
-
-    req.flash("success", "Workspace has been successfully updated.");
-    res.redirect(`/workspaces/${id}`);
-}));
-
-app.delete("/workspaces/:id", isLoggedIn, isAuthor, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Workspace.findByIdAndDelete(id);
-    req.flash("success", "Workspace has been successfully deleted.");
-    res.redirect("/workspaces");
-}));
-
+app.get("/workspaces", catchAsync(workspaces.index));
+app.get("/workspaces/new", isLoggedIn, workspaces.renderNewWorkspaceForm);
+app.post("/workspaces", isLoggedIn, validateWorkspace, catchAsync(workspaces.createWorkspace));
+app.get("/workspaces/:id", catchAsync(workspaces.showWorkspace));
+app.get("/workspaces/:id/edit", isLoggedIn, workspaces.renderEditForm);
+app.put("/workspaces/:id", isLoggedIn, isAuthor, upload.array("image"), validateWorkspace, catchAsync(workspaces.updateWorkspace));
+app.delete("/workspaces/:id", isLoggedIn, isAuthor, catchAsync(workspaces.deleteWorkspace));
 
 //----REVIEW ROUTES----
-
-app.post("/workspaces/:id/reviews", isLoggedIn, validateReview, catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const workspace = await Workspace.findById(id);
-    const newReview = new Review(req.body.review);
-
-    newReview.author = req.user._id;
-    newReview.workspace = workspace;
-    workspace.reviews.push(newReview);
-
-    await newReview.save();
-    await workspace.save();
-
-    req.flash("success", "Your review has been added successfully.");
-    res.redirect(`/workspaces/${id}`);
-}));
-
-app.delete("/workspaces/:workspaceID/reviews/:reviewID", isLoggedIn, isReviewAuthor, catchAsync(async (req, res) => {
-    const { workspaceID, reviewID } = req.params;
-    await Workspace.findByIdAndUpdate(workspaceID, { $pull: { reviews: reviewID } });
-    await Review.findByIdAndDelete(reviewID);
-    req.flash("success", "Review has been successfully deleted.");
-    res.redirect(`/workspaces/${workspaceID}`);
-}));
+app.post("/workspaces/:id/reviews", isLoggedIn, validateReview, catchAsync(reviews.createReview));
+app.delete("/workspaces/:workspaceID/reviews/:reviewID", isLoggedIn, isReviewAuthor, catchAsync(reviews.deleteReview));
 
 app.use((err, req, res, next) => {
     if (!err.message) err.message = "Oh no, this sucks!!!";
