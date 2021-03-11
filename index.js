@@ -14,17 +14,11 @@ const LocalStrategy = require("passport-local");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const User = require("./models/user");
-const Workspace = require("./models/workspace");
-const Review = require("./models/review");
-const { isLoggedIn, validateWorkspace, isAuthor, validateReview, isReviewAuthor } = require("./middleware");
-const multer = require("multer");
-const { storage, cloudinary } = require("./cloudinary");
-const upload = multer({ storage });
-const catchAsync = require("./utils/CatchAsync");
-//controllers
-const workspaces = require("./controllers/workspaces");
-const reviews = require("./controllers/reviews");
-const users = require("./controllers/users");
+
+//routers
+const workspaceRoutes = require("./routes/workspaces");
+const reviewRoutes = require("./routes/reviews");
+const userRoutes = require("./routes/users");
 
 const dbUrl = "mongodb://localhost:27017/crammify";
 
@@ -48,7 +42,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", ejsMate);
 
-//----middleware----
+//----MIDDLEWARE----
 app.use(mongoSanitize());
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
@@ -87,30 +81,15 @@ app.use((req, res, next) => {
     next();
 });
 
+//----ROUTES----
 app.get("/", (req, res) => {
     res.render("home");
 });
 
-
-//----USER ROUTES----
-app.get("/register", users.renderRegisterForm);
-app.post("/register", catchAsync(users.registerUser));
-app.get("/login", users.renderLoginForm);
-app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), users.login);
-app.get("/logout", users.logout);
-
-//----WORKSPACE ROUTES----
-app.get("/workspaces", catchAsync(workspaces.index));
-app.get("/workspaces/new", isLoggedIn, workspaces.renderNewWorkspaceForm);
-app.post("/workspaces", isLoggedIn, validateWorkspace, catchAsync(workspaces.createWorkspace));
-app.get("/workspaces/:id", catchAsync(workspaces.showWorkspace));
-app.get("/workspaces/:id/edit", isLoggedIn, workspaces.renderEditForm);
-app.put("/workspaces/:id", isLoggedIn, isAuthor, upload.array("image"), validateWorkspace, catchAsync(workspaces.updateWorkspace));
-app.delete("/workspaces/:id", isLoggedIn, isAuthor, catchAsync(workspaces.deleteWorkspace));
-
-//----REVIEW ROUTES----
-app.post("/workspaces/:id/reviews", isLoggedIn, validateReview, catchAsync(reviews.createReview));
-app.delete("/workspaces/:workspaceID/reviews/:reviewID", isLoggedIn, isReviewAuthor, catchAsync(reviews.deleteReview));
+//----MIDDLEWARE FOR ROUTES----
+app.use("/", userRoutes);
+app.use("/workspaces", workspaceRoutes);
+app.use("/workspaces/:id/reviews", reviewRoutes);
 
 app.use((err, req, res, next) => {
     if (!err.message) err.message = "Oh no, this sucks!!!";

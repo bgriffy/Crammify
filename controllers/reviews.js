@@ -3,8 +3,9 @@ const Review = require("../models/review");
 
 module.exports.createReview = async (req, res, next) => {
     const { id } = req.params;
+    const { review } = req.body;
     const workspace = await Workspace.findById(id);
-    const newReview = new Review(req.body.review);
+    const newReview = new Review(review);
 
     newReview.author = req.user._id;
     newReview.workspace = workspace;
@@ -18,9 +19,9 @@ module.exports.createReview = async (req, res, next) => {
 };
 
 module.exports.deleteReview = async (req, res) => {
-    const { workspaceID, reviewID } = req.params;
-    await Workspace.findByIdAndUpdate(workspaceID, { $pull: { reviews: reviewID } });
+    const { id, reviewID } = req.params;
+    await Workspace.findByIdAndUpdate(id, { $pull: { reviews: reviewID } });
     await Review.findByIdAndDelete(reviewID);
     req.flash("success", "Review has been successfully deleted.");
-    res.redirect(`/workspaces/${workspaceID}`);
+    res.redirect(`/workspaces/${id}`);
 };
