@@ -1,4 +1,4 @@
-if(process.env.NODE_ !== "production"){
+if (process.env.NODE_ !== "production") {
     require("dotenv").config();
 }
 
@@ -14,13 +14,11 @@ const LocalStrategy = require("passport-local");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const User = require("./models/user");
-
-//routers
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/crammify";
 const workspaceRoutes = require("./routes/workspaces");
 const reviewRoutes = require("./routes/reviews");
 const userRoutes = require("./routes/users");
-
-const dbUrl = "mongodb://localhost:27017/crammify";
+const MongoDBStore = require("connect-mongo")(session);
 
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
@@ -49,11 +47,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(helmet({ contentSecurityPolicy: false }));
 
-const secret = "thisshouldbeabettersecret"
+const secret = process.env.SECRET || "thisshouldbeabettersecret";
+
+const store = new MongoDBStore({
+    url: dbUrl,
+    secret,
+    touchAfter: 24 * 60 * 60
+});
+
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e);
+});
 
 const sessionConfig = {
-    // store,
-    // secure: true,
+    store,
+    secure: true,
     name: "custom-session",
     secret: secret,
     resave: false,
