@@ -1,0 +1,21 @@
+
+
+
+@media only screen and (min-width: 280px) {  
+    .img-fluid {
+        height: 200px;
+        width: 100%;
+    }
+
+    ul {
+        padding-inline-start: 0;
+    }
+}
+
+@media only screen and (min-width: 992px) {  
+    .img-fluid {
+        height:250px;
+        width: 100%;
+    }
+}
+
