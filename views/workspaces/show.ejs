@@ -1,8 +1,9 @@
 <% layout('layouts/boilerplate') %>
     <link rel="stylesheet" href="/stylesheets/stars.css">
+    <link rel="stylesheet" href="/stylesheets/show.css">
 
     <div class="row">
-        <div class="col-6">
+        <div class="col-md-6">
             <div id="workspaceCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <% workspace.images.forEach((img, i)=> {%>
@@ -57,7 +58,7 @@
             </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-md-6">
             <h2>Leave a Review</h2>
             <div class="mb-3">
 

@@ -1,0 +1,15 @@
+@media only screen and (min-width: 280px) {  
+    img {
+        max-height: 200px;
+        background: transparent no-repeat center;
+        background-size: cover;
+    }
+}
+
+@media only screen and (min-width: 992px) {  
+    img {
+        max-height: 400px;
+        background: transparent no-repeat center;
+        background-size: cover;
+    }
+}
