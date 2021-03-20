@@ -1,3 +1,7 @@
+if (process.env.NODE_ !== "production") {
+    require("dotenv").config();
+}
+
 const mongoose = require("mongoose");
 const Workspace = (require("../models/workspace"));
 const User = (require("../models/user"));
