@@ -2,7 +2,8 @@
     <div class="row">
         <h1 class="text-center">Edit Workspace</h1>
         <div class="col-6 offset-3">
-            <form action="/workspaces/<%= workspace._id %>?_method=PUT" method="POST" enctype="multipart/form-data" novalidate class="validated-form">
+            <form action="/workspaces/<%= workspace._id %>?_method=PUT" method="POST" enctype="multipart/form-data"
+                novalidate class="validated-form">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
                     <input type="text" id="title" class="form-control" name="workspace[title]" required
@@ -33,14 +34,15 @@
                     <% workspace.images.forEach(function(img, index){ %>
                         <img src="<%= img.thumbnail %>" class="img-thumbnail" alt="">
                         <div class="form-check-inline">
-                            <input type="checkbox" name="deleteImages[]" id="image-<%=index%>" value="<%=img.filename%>">
+                            <input type="checkbox" name="deleteImages[]" id="image-<%=index%>"
+                                value="<%=img.filename%>">
                         </div>
                         <label for="image-<%=index%>">Delete</label>
-                    <% }) %> 
+                        <% }) %>
                 </div>
 
-                <div class="mb-3"><button class="btn btn-info">Update workspace</button></div>
+                <div class="mb-5 mt-5"><button class="btn btn-primary">Update</button></div>
             </form>
-            <a href="/workspaces/<%= workspace._id %>">Back To workspace</a>
+            <a href="/workspaces/<%= workspace._id %>">Back to Workspace</a>
         </div>
     </div>

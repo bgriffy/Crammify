@@ -34,4 +34,11 @@ body{
 .btn-secondary {
     color: #333; 
     text-shadow: none;
+    background-color: white;
+}
+
+.btn-secondary:hover {
+    color: white; 
+    text-shadow: none;
+    background-color: #4d194d;
 }

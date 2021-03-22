@@ -1,5 +1,5 @@
 <% layout('layouts/boilerplate') %>
-<link rel="stylesheet" href="/stylesheets/index.css">
+    <link rel="stylesheet" href="/stylesheets/index.css">
     <h1 class="text-center mb-3 mb-md-4 mb-xl-5">All Workspaces</h1>
 
     <ul>
@@ -16,7 +16,7 @@
                             <h5 class="card-title">
                                 <%= workspace.title %>
                             </h5>
-                            <p class="card-text">
+                            <p class="card-text workspace-description">
                                 <%= workspace.description %>
                             </p>
                             <p class="card-text">
@@ -24,7 +24,7 @@
                                     <%= workspace.location %>
                                 </small>
                             </p>
-                            <a href="/workspaces/<%= workspace._id %>" class="btn btn-primary">View</a>
+                            <a href="/workspaces/<%= workspace._id %>" class="btn btn-primary">View Workspace</a>
                         </div>
                     </div>
                 </div>
@@ -32,6 +32,4 @@
             <% } %>
     </ul>
 
-    <footer>
-        <a href="/workspaces/new">Add workspace</a>
-    </footer>
+    <a href="/workspaces/new">Add Workspace</a>
