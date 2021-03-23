@@ -1,9 +1,10 @@
-if (process.env.NODE_ !== "production") {
-    require("dotenv").config();
-}
-
 const express = require("express");
 const path = require("path");
+
+if (process.env.NODE_ !== "production") {
+    require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
+}
+
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
@@ -27,6 +28,8 @@ mongoose.connect(dbUrl, {
     useFindAndModify: false
 });
 
+console.log(`dbURL: ${dbUrl}`);
+
 const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -44,7 +47,7 @@ app.engine("ejs", ejsMate);
 app.use(mongoSanitize());
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../public")));
 app.use(helmet({ contentSecurityPolicy: false }));
 
 const secret = process.env.SECRET || "thisshouldbeabettersecret";
