@@ -17,11 +17,7 @@ footer {
     background-color: #4d194d;
 }
 
-.navbar a{
-    color: white;
-}
-
-.navbar a:hover{
+.navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-brand:hover{
     color: #006466;
 }
 

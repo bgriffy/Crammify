@@ -9,14 +9,14 @@ const workspaces = require("../controllers/workspaces");
 
 router.route("/")
     .get(catchAsync(workspaces.index))
-    .post(isLoggedIn, validateWorkspace, catchAsync(workspaces.createWorkspace));
+    .post(isLoggedIn, upload.array("image"), validateWorkspace, catchAsync(workspaces.createWorkspace));
 
 router.route("/new").get(isLoggedIn, workspaces.renderNewWorkspaceForm);
 
 router.route("/:id")
     .get(catchAsync(workspaces.showWorkspace))
     .put(isLoggedIn, isAuthor, upload.array("image"), validateWorkspace, catchAsync(workspaces.updateWorkspace))
-    .delete(isLoggedIn, isAuthor, catchAsync(workspaces.deleteWorkspace)); 
+    .delete(isLoggedIn, isAuthor, catchAsync(workspaces.deleteWorkspace));
 
 router.route("/:id/edit").get(isLoggedIn, workspaces.renderEditForm);
 

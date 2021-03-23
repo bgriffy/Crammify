@@ -1,5 +1,5 @@
 const Workspace = (require("../models/workspace"));
-const {cloudinary} = require("../cloudinary");
+const { cloudinary } = require("../cloudinary");
 
 module.exports.index = async (req, res) => {
     const workspaces = await Workspace.find({});
@@ -12,12 +12,17 @@ module.exports.renderNewWorkspaceForm = (req, res) => {
 
 module.exports.createWorkspace = async (req, res, next) => {
     const newWorkspace = new Workspace(req.body.workspace);
+    const images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+
     newWorkspace.author = req.user._id;
+    newWorkspace.images.push(...images);
     await newWorkspace.save();
+
     if (!newWorkspace) {
         req.flash("error", "Could not create new workspace.");
         return res.redirect("/workspaces/new");
     }
+
     res.redirect(`/workspaces/${newWorkspace._id}`);
 };
 
@@ -52,11 +57,11 @@ module.exports.updateWorkspace = async (req, res) => {
     const images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     const imagesToDelete = req.body.deleteImages;
 
-    if(imagesToDelete){
-        for(let filename of imagesToDelete) {
-            await cloudinary.uploader.destroy(filename); 
+    if (imagesToDelete) {
+        for (let filename of imagesToDelete) {
+            await cloudinary.uploader.destroy(filename);
         }
-        await workspace.updateOne({$pull: {images: {filename: {$in: imagesToDelete} } } } )
+        await workspace.updateOne({ $pull: { images: { filename: { $in: imagesToDelete } } } })
     }
 
     workspace.images.push(...images);
