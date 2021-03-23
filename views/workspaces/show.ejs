@@ -45,9 +45,10 @@
 
                 <% if(currentUser && workspace.author.equals(currentUser._id)) { %>
                     <div class="card-body">
-                        <a href="/workspaces/<%= workspace._id %>/edit" class="card-link btn btn-primary">Edit</a>
+                        <a href="/workspaces/<%= workspace._id %>/edit"
+                            class="card-link btn btn-primary btn-custom">Edit</a>
                         <form class="d-inline" action="/workspaces/<%=workspace._id%>?_method=DELETE" method="POST">
-                            <button class="btn btn-danger card-link">Delete</button>
+                            <button class="btn btn-danger card-link btn-custom">Delete</button>
                         </form>
                     </div>
                     <% } %>
@@ -86,7 +87,7 @@
                     <textarea class="form-control" name="review[body]" id="body" cols="30" rows=3 required></textarea>
                     <div class="valid-feedback">Looks good!</div>
                 </div>
-                <button class="btn btn-success">Submit</button>
+                <button class="btn btn-success btn-custom">Submit</button>
             </form>
 
             <% for(let review of workspace.reviews){ %>
