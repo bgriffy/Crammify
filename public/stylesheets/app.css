@@ -31,6 +31,14 @@ footer {
     background-color: #006466;
 }
 
+.btn.btn-primary.active,
+.btn.btn-primary:active,
+.btn.btn-primary.focus,
+.btn.btn-primary:focus {
+    background-color: #006466;
+    box-shadow: 0 0 5px 2px#4d194d;
+}
+
 .btn-success {
     background-color: #006466;
     border-color: #006466;
@@ -39,6 +47,21 @@ footer {
 .btn-success:hover {
     background-color: #3e1f47;
     border-color: #3e1f47;
+}
+
+.btn.btn-success.active,
+.btn.btn-success:active,
+.btn.btn-success.focus,
+.btn.btn-success:focus {
+    background-color: #4d194d;
+    box-shadow: 0 0 5px 2px #065A60;
+}
+
+.btn.btn-danger.active,
+.btn.btn-danger:active,
+.btn.btn-danger.focus,
+.btn.btn-danger:focus {
+    box-shadow: 0 0 5px 2px red;
 }
 
 .form-control:focus {
