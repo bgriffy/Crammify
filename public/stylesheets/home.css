@@ -31,14 +31,19 @@ body{
     border-bottom-color: rgba(255, 255, 255, 0.5);
 }
 
-.btn-secondary {
+.btn {
     color: #333; 
     text-shadow: none;
     background-color: white;
 }
 
-.btn-secondary:hover {
+.btn:hover,
+.btn.active,
+.btn:active,
+.btn.focus,
+.btn:focus {
     color: white; 
     text-shadow: none;
     background-color: #4d194d;
+    box-shadow: 0 0 5px 2px white;
 }

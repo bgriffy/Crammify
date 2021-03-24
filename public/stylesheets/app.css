@@ -29,6 +29,7 @@ footer {
 
 .btn-primary:hover {
     background-color: #006466;
+    color: black;
 }
 
 .btn.btn-primary.active,
@@ -37,6 +38,7 @@ footer {
 .btn.btn-primary:focus {
     background-color: #006466;
     box-shadow: 0 0 5px 2px#4d194d;
+    border-color: black;
 }
 
 .btn-success {
@@ -55,6 +57,7 @@ footer {
 .btn.btn-success:focus {
     background-color: #4d194d;
     box-shadow: 0 0 5px 2px #065A60;
+    border-color: #3e1f47;
 }
 
 .btn.btn-danger.active,
