@@ -4,7 +4,8 @@ const catchAsync = require("../utils/CatchAsync");
 const reviews = require("../controllers/reviews");
 const { isLoggedIn, validateReview, isReviewAuthor } = require("../middleware");
 
-router.post("/", isLoggedIn, validateReview, catchAsync(reviews.createReview)); 
+router.post("/", isLoggedIn, validateReview, catchAsync(reviews.createReview));
 router.delete("/:reviewID", isLoggedIn, isReviewAuthor, catchAsync(reviews.deleteReview));
+router.route("/new").get(isLoggedIn, reviews.renderNewReviewForm);
 
 module.exports = router;

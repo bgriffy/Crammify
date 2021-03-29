@@ -25,3 +25,9 @@ module.exports.deleteReview = async (req, res) => {
     req.flash("success", "Review has been successfully deleted.");
     res.redirect(`/workspaces/${id}`);
 };
+
+module.exports.renderNewReviewForm = async (req, res) => {
+    const { id } = req.params;
+    const reviewWorkspace = await Workspace.findById(id);
+    res.render(`reviews/new`, { workspace: reviewWorkspace });
+};
