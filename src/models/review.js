@@ -7,6 +7,11 @@ const reviewSchema = new Schema({
     author: {
         type: Schema.Types.ObjectId,
         ref: "User"
+    }, 
+    noiseLevel: {
+        type: Number, 
+        min: [0, "Noise level cannot be less than zero."], 
+        max: [10, "Noise level cannot be greather than ten."]
     }
 });
 
