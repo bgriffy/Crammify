@@ -35,6 +35,7 @@ module.exports.workspaceValidationSchema = Joi.object({
 module.exports.reviewValidationSchema = Joi.object({
     review: Joi.object({
         rating: Joi.number().required().min(0).max(5),
+        noiseLevel: Joi.number().required().min(0).max(3),
         body: Joi.string().required().escapeHTML()
     }).required()
 });
