@@ -35,6 +35,10 @@ module.exports.workspaceValidationSchema = Joi.object({
 module.exports.reviewValidationSchema = Joi.object({
     review: Joi.object({
         rating: Joi.number().required().min(0).max(5),
+        noiseLevel: Joi.number().required().min(0).max(3),
+        lightingLevel: Joi.number().required().min(0).max(3),
+        wifiAvailability: Joi.number().required().min(0).max(3),
+        spaceAvailable: Joi.number().required().min(0).max(3),
         body: Joi.string().required().escapeHTML()
     }).required()
 });

@@ -2,10 +2,11 @@
     <link rel="stylesheet" href="/stylesheets/stars.css">
     <link rel="stylesheet" href="/stylesheets/show.css">
 
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
             <form action="/workspaces/<%= workspace._id %>/reviews" method="POST" class="mb-4 mb-md-5 validated-form"
                 novalidate>
+                <!-- Rating -->
                 <div class="card mb-4">
                     <div class="card-body">
                         <h2 class="card-title">Leave a Review</h2>
@@ -30,26 +31,95 @@
                             
                         </p>
                     </div>
+
                     <ul class="list-group list-group-flush">
+                        <!-- Noise Level -->
                         <li class="list-group-item text-muted">
                             <h5>Noise Level</h5>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-                                <label class="form-check-label" for="inlineRadio1">Quiet</label>
+                                <input class="form-check-input" type="radio" name="review[noiseLevel]" id="quietNoiseLevelRadio" value="0">
+                                <label class="form-check-label" for="quietNoiseLevelRadio">Quiet</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                                <label class="form-check-label" for="inlineRadio2">Neutral</label>
+                                <input class="form-check-input" type="radio" name="review[noiseLevel]" id="neutralNoiseLevelRadio" value="1">
+                                <label class="form-check-label" for="neutralNoiseLevelRadio">Neutral</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                                <label class="form-check-label" for="inlineRadio2">Noisy</label>
+                                <input class="form-check-input" type="radio" name="review[noiseLevel]" id="noisyNoiseLevelRadio" value="2">
+                                <label class="form-check-label" for="noisyNoiseLevelRadio">Noisy</label>
                             </div>
                             <div class="form-check form-check-inline mb-3">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                                <label class="form-check-label" for="inlineRadio2">Loud</label>
+                                <input class="form-check-input" type="radio" name="review[noiseLevel]" id="loudNoiseLevelRadio" value="3">
+                                <label class="form-check-label" for="loudNoiseLevelRadio">Loud</label>
                             </div>
                         </li>
+
+                        <!-- Lighting -->
+                        <li class="list-group-item text-muted">
+                            <h5>Lighting</h5>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[lightingLevel]" id="poorLighting" value="0">
+                                <label class="form-check-label" for="poorLighting">Poor</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[lightingLevel]" id="acceptableLighting" value="1">
+                                <label class="form-check-label" for="acceptableLighting">Acceptable</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[lightingLevel]" id="goodLighting" value="2">
+                                <label class="form-check-label" for="goodLighting">Good</label>
+                            </div>
+                            <div class="form-check form-check-inline mb-3">
+                                <input class="form-check-input" type="radio" name="review[lightingLevel]" id="excellentLighting" value="3">
+                                <label class="form-check-label" for="excellentLighting">Excellent</label>
+                            </div>
+                        </li>
+
+                        <!-- Wifi -->
+                        <li class="list-group-item text-muted">
+                            <h5>Wifi Availability</h5>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[wifiAvailability]" id="noWifiRadio" value="0">
+                                <label class="form-check-label" for="crampedSpaceRadio">None</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[wifiAvailability]" id="feeWifiRadio" value="1">
+                                <label class="form-check-label" for="individualSpaceRadio">Free</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[wifiAvailability]" id="paidWifiRadio" value="2">
+                                <label class="form-check-label" for="smallGroupSpaceRadio">Paid</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[wifiAvailability]" id="unsureWifiRadio" value="3">
+                                <label class="form-check-label" for="smallGroupSpaceRadio">Unsure</label>
+                            </div>
+                        </li>
+
+                        <!-- Space Available -->
+                        <li class="list-group-item text-muted">
+                            <h5>Space Available</h5>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[spaceAvailable]" id="crampedSpaceRadio" value="0">
+                                <label class="form-check-label" for="crampedSpaceRadio">Cramped</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[spaceAvailable]" id="individualSpaceRadio" value="1">
+                                <label class="form-check-label" for="individualSpaceRadio">Individuals only</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="review[spaceAvailable]" id="smallGroupSpaceRadio" value="2">
+                                <label class="form-check-label" for="smallGroupSpaceRadio">Small groups</label>
+                            </div>
+                            <div class="form-check form-check-inline mb-3">
+                                <input class="form-check-input" type="radio" name="review[spaceAvailable]" id="largeGroupSpaceRadio" value="3">
+                                <label class="form-check-label" for="largeGroupSpaceRadio">Large groups</label>
+                            </div>
+                        </li>
+
+                        
+
+                        <!-- Review Text -->
                         <textarea class="form-control list-group-item" name="review[body]" id="body" cols="30" rows=5 required
                             placeholder="Share details of your own experience at this workspace"></textarea>
                         <div class="valid-feedback">Looks good!</div>
