@@ -26,7 +26,12 @@ const workspaceSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "Review"
         }
-    ]
+    ], 
+    averageLightingLevel: {
+        type: Number, 
+        min: [0, "Average lighting level cannot be less than zero."],
+        max: [3, "Average lighting level cannot be greather than three."]
+    }
 }, opts);
 
 workspaceSchema.post("findOneAndDelete", async function (doc) {

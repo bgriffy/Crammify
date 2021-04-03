@@ -12,20 +12,20 @@ module.exports.createReview = async (req, res, next) => {
     workspace.reviews.push(newReview);
 
     await newReview.save();
+
+    //Get average lighting level of workspace reviews
+    await Review.aggregate(
+        [
+            { $match: { _id: { $in: workspace.reviews } } },
+            { $group: { _id: null, average: {$avg: '$lightingLevel'}}}, 
+            { $limit: 1 }
+        ], 
+        //Save results to averageLightingLevel 
+        async function(err, result) {
+            workspace.averageLightingLevel = result[0].average;
+        });
+
     await workspace.save();
-
-    // Get the array of review IDs associated with the workspace
-    Workspace.findById(id, "reviews", (err, workspace) => {
-        // Get the actual review objects associated with those IDs and get average lighting level 
-        Review.aggregate(
-            [
-                { $match: { _id: { $in: workspace.reviews } } },
-                { $group: { _id: null, average: { $avg: "$lightingLevel" } } }
-            ], (err, result) => {
-                console.log(`AGGREGATE RESULT: ${result.average}`);}
-            );
-    });
-
 
     req.flash("success", "Your review has been added successfully.");
     res.redirect(`/workspaces/${id}`);
