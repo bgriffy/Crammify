@@ -13,16 +13,24 @@ module.exports.createReview = async (req, res, next) => {
 
     await newReview.save();
 
-    //Get average lighting level of workspace reviews
+    //Get attribute averages from workspace reviews
     await Review.aggregate(
         [
             { $match: { _id: { $in: workspace.reviews } } },
-            { $group: { _id: null, average: {$avg: '$lightingLevel'}}}, 
+            { $group: { _id: null, avgLightingLevel: {$avg: '$lightingLevel'}, 
+                                   avgNoiseLevel: {$avg: '$noiseLevel'}, 
+                                   avgWifiAvailability: {$avg: '$wifiAvailability'}, 
+                                   avgSpaceAvailable: {$avg: '$spaceAvailable'} 
+            }}, 
             { $limit: 1 }
         ], 
-        //Save results to averageLightingLevel 
-        async function(err, result) {
-            workspace.averageLightingLevel = result[0].average;
+
+        //Save results to workspace
+        async (err, result) => {
+            workspace.averageLightingLevel = result[0].avgLightingLevel;
+            workspace.averageNoiseLevel = result[0].avgNoiseLevel;
+            workspace.averageWifiAvailability = result[0].avgWifiAvailability;
+            workspace.averageSpaceAvailable = result[0].avgSpaceAvailable;
         });
 
     await workspace.save();

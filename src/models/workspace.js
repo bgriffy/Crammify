@@ -31,7 +31,23 @@ const workspaceSchema = new Schema({
         type: Number, 
         min: [0, "Average lighting level cannot be less than zero."],
         max: [3, "Average lighting level cannot be greather than three."]
+    }, 
+    averageNoiseLevel: {
+        type: Number, 
+        min: [0, "Average noise level cannot be less than zero."],
+        max: [3, "Average noise level cannot be greather than three."]
+    }, 
+    averageSpaceAvailable: {
+        type: Number, 
+        min: [0, "Average space available cannot be less than zero."],
+        max: [3, "Average space available cannot be greather than three."]
+    }, 
+    averageWifiAvailability: {
+        type: Number, 
+        min: [0, "Average wifi-availability cannot be less than zero."],
+        max: [3, "Average wifi-availability cannot be greather than three."]
     }
+
 }, opts);
 
 workspaceSchema.post("findOneAndDelete", async function (doc) {
