@@ -3,6 +3,11 @@ const Schema = mongoose.Schema;
 const review = require("./review");
 const opts = { toJSON: { virtuals: true } };
 
+const lightingOptions = ["Poor lighting", "Acceptable lighting", "Good lighting", "Excellent lighting"]; 
+const noiseOptions = ["Quiet space", "Neutral noise-level", "Noisy space", "Loud space"]; 
+const wifiAvailabilityOptions = ["No wifi", "Free wifi", "Paid wifi"];
+const spaceAvailablityOptions = ["Cramped space", "Space for individuals", "Space for small groups", "Space for large groups"];
+
 const imageSchema = new Schema({
     url: String,
     filename: String
@@ -49,6 +54,34 @@ const workspaceSchema = new Schema({
     }
 
 }, opts);
+
+workspaceSchema.virtual("attributesDescription").get( function() {
+    let lightingDescription = GetLightingAttributeDescription(this.averageLightingLevel); 
+    let noiseDescription = GetNoiseAttributeDescription(this.averageNoiseLevel); 
+    let wifiDescription = GetWifiAttributeDescription(this.averageWifiAvailability); 
+    let spaceDescription = GetSpaceAttributeDescription(this.averageSpaceAvailable); 
+    return (`${lightingDescription}${noiseDescription}${wifiDescription}${spaceDescription}`)
+});
+
+function GetLightingAttributeDescription(lightingOption) {
+    if (typeof lightingOption == "undefined") return ""; 
+    return (`${lightingOptions[Math.round(lightingOption)]}`);
+}
+
+function GetNoiseAttributeDescription(noiseOption) {
+    if (typeof noiseOption == "undefined") return ""; 
+    return (`, ${noiseOptions[Math.round(noiseOption)]}`);
+}
+
+function GetWifiAttributeDescription(wifiOption) {
+    if (typeof wifiOption == "undefined") return ""; 
+    return (wifiOption > 2 ? "" : `, ${wifiAvailabilityOptions[Math.round(wifiOption)]}`);
+}
+
+function GetSpaceAttributeDescription(spaceOption) {
+    if (typeof spaceOption == "undefined") return ""; 
+    return (`, ${spaceAvailablityOptions[Math.round(spaceOption)]}`);
+}
 
 workspaceSchema.post("findOneAndDelete", async function (doc) {
     if (doc) {

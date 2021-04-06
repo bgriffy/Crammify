@@ -21,7 +21,12 @@
                             </p>
                             <p class="card-text">
                                 <small class="text-muted">
-                                    <%= workspace.location %>
+                                    <i><%= workspace.location %></i>
+                                </small>
+                            </p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <%= workspace.attributesDescription %> 
                                 </small>
                             </p>
                             <a href="/workspaces/<%= workspace._id %>" class="btn btn-primary">View Workspace</a>
