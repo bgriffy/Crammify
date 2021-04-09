@@ -38,9 +38,23 @@
                     <li class="list-group-item text-muted">
                         <%= workspace.location %>
                     </li>
-                    <li class="list-group-item">
-                        <i class="fas fa-volume-up"></i> Quiet Space
-                    </li>
+
+                    <% if(workspace.hasAttributes){ %>
+                        <li class="list-group-item">
+                            <% if(workspace.noiseAttributeDescription){ %>
+                                <div class="d-inline"><i class="fas fa-volume-up mx-1"></i><%= workspace.noiseAttributeDescription%></div>
+                            <% } %>
+                            <% if(workspace.lightingAttributeDescription){ %>
+                                <div class="d-inline mx-3"><i class="far fa-lightbulb mx-1"></i><%= workspace.lightingAttributeDescription%></div>
+                            <% } %>
+                            <% if(workspace.wifiAttributeDescription){ %>
+                                <div class="d-inline"><i class="fas fa-wifi mx-1"></i><%= workspace.wifiAttributeDescription%></div>
+                            <% } %>
+                            <% if(workspace.spaceAttributeDescription){ %>
+                                <div class="d-inline mx-3"><i class="fas fa-users mx-1"></i><%= workspace.spaceAttributeDescription%></div>
+                            <% } %>
+                        </li>
+                    <% } %>
                     <li class="list-group-item">
                         Submitted by <%= workspace.author.username %>
                     </li>

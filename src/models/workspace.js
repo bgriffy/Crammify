@@ -60,7 +60,43 @@ workspaceSchema.virtual("attributesDescription").get( function() {
     let noiseDescription = GetNoiseAttributeDescription(this.averageNoiseLevel); 
     let wifiDescription = GetWifiAttributeDescription(this.averageWifiAvailability); 
     let spaceDescription = GetSpaceAttributeDescription(this.averageSpaceAvailable); 
-    return (`${lightingDescription}${noiseDescription}${wifiDescription}${spaceDescription}`)
+
+    let attributes = [];
+    if (lightingDescription) attributes.push(lightingDescription);
+    if (noiseDescription) attributes.push(noiseDescription);
+    if (wifiDescription) attributes.push(wifiDescription);
+    if (spaceDescription) attributes.push(spaceDescription);
+
+    return (attributes.join(", "));
+});
+
+workspaceSchema.virtual("hasAttributes").get( function() {
+    let lightingDescription = GetLightingAttributeDescription(this.averageLightingLevel); 
+    let noiseDescription = GetNoiseAttributeDescription(this.averageNoiseLevel); 
+    let wifiDescription = GetWifiAttributeDescription(this.averageWifiAvailability); 
+    let spaceDescription = GetSpaceAttributeDescription(this.averageSpaceAvailable); 
+
+    return (lightingDescription || noiseDescription || wifiDescription || spaceDescription);
+});
+
+workspaceSchema.virtual("lightingAttributeDescription").get( function() {
+    let lightingDescription = GetLightingAttributeDescription(this.averageLightingLevel); 
+    return lightingDescription;
+});
+
+workspaceSchema.virtual("noiseAttributeDescription").get( function() {
+    let noiseDescription = GetNoiseAttributeDescription(this.averageNoiseLevel); 
+    return noiseDescription;
+});
+
+workspaceSchema.virtual("wifiAttributeDescription").get( function() {
+    let wifiDescription = GetWifiAttributeDescription(this.averageWifiAvailability); 
+    return wifiDescription;
+});
+
+workspaceSchema.virtual("spaceAttributeDescription").get( function() {
+    let spaceDescription = GetSpaceAttributeDescription(this.averageSpaceAvailable); 
+    return spaceDescription;
 });
 
 function GetLightingAttributeDescription(lightingOption) {
@@ -70,17 +106,17 @@ function GetLightingAttributeDescription(lightingOption) {
 
 function GetNoiseAttributeDescription(noiseOption) {
     if (typeof noiseOption == "undefined") return ""; 
-    return (`, ${noiseOptions[Math.round(noiseOption)]}`);
+    return (`${noiseOptions[Math.round(noiseOption)]}`);
 }
 
 function GetWifiAttributeDescription(wifiOption) {
     if (typeof wifiOption == "undefined") return ""; 
-    return (wifiOption > 2 ? "" : `, ${wifiAvailabilityOptions[Math.round(wifiOption)]}`);
+    return (wifiOption > 2 ? "" : `${wifiAvailabilityOptions[Math.round(wifiOption)]}`);
 }
 
 function GetSpaceAttributeDescription(spaceOption) {
     if (typeof spaceOption == "undefined") return ""; 
-    return (`, ${spaceAvailablityOptions[Math.round(spaceOption)]}`);
+    return (`${spaceAvailablityOptions[Math.round(spaceOption)]}`);
 }
 
 workspaceSchema.post("findOneAndDelete", async function (doc) {
