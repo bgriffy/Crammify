@@ -4,6 +4,9 @@
         background: transparent no-repeat center;
         background-size: cover;
     }
+    .attribute-description {
+        font-size: 0.9rem;
+    }
 }
 
 @media only screen and (min-width: 992px) {  
@@ -11,5 +14,8 @@
         max-height: 400px;
         background: transparent no-repeat center;
         background-size: cover;
+    }
+    .attribute-description {
+        font-size: 1rem;
     }
 }
