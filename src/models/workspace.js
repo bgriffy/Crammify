@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 const review = require("./review");
 const opts = { toJSON: { virtuals: true } };
 
-const lightingOptions = ["Poor lighting", "Acceptable lighting", "Good lighting", "Excellent lighting"]; 
+const lightingOptions = ["Dim lighting", "Acceptable lighting", "Good lighting", "Excellent lighting"]; 
 const noiseOptions = ["Quiet space", "Neutral noise-level", "Noisy space", "Loud space"]; 
 const wifiAvailabilityOptions = ["No wifi", "Free wifi", "Paid wifi"];
-const spaceAvailablityOptions = ["Cramped space", "Space for individuals", "Space for small groups", "Space for large groups"];
+const spaceAvailablityOptions = ["Confined space", "Space for individuals", "Space for small groups", "Space for large groups"];
 
 const imageSchema = new Schema({
     url: String,
