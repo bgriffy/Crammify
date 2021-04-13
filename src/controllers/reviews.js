@@ -12,8 +12,42 @@ module.exports.createReview = async (req, res, next) => {
     workspace.reviews.push(newReview);
 
     await newReview.save();
+    await SetAggregatesOnWorkspace(workspace);
+    await workspace.save();
 
-    //Get attribute averages from workspace reviews
+    req.flash("success", "Your review has been added successfully.");
+    res.redirect(`/workspaces/${id}`);
+};
+
+module.exports.deleteReview = async (req, res) => {
+    const { id, reviewID } = req.params;
+    const workspace = await Workspace.findById(id);
+
+    workspace.update({ $pull: { reviews: reviewID } });
+    await Review.findByIdAndDelete(reviewID);
+    workspace.reviews = workspace.reviews.filter(review => review !== reviewID);
+    await SetAggregatesOnWorkspace(workspace);
+    workspace.save(); 
+
+    req.flash("success", "Review has been successfully deleted.");
+    res.redirect(`/workspaces/${id}`);
+};
+
+//TODO: Refactor. Logic to delete attributes on workspace should probably be moved to workspace model. 
+async function SetAggregatesOnWorkspace (workspace){
+    if (workspace.reviews.length < 1) {
+        console.log("This workspace has no reviews!");
+        return workspace.update({ $unset: { 
+            averageLightingLevel: "", 
+            averageNoiseLevel: "", 
+            averageWifiAvailability: "", 
+            averageSpaceAvailable: "" } 
+        }); 
+    }
+    else{
+        console.log(`This workspace has ${workspace.reviews.length} reviews!`);
+    }
+    
     await Review.aggregate(
         [
             { $match: { _id: { $in: workspace.reviews } } },
@@ -25,27 +59,13 @@ module.exports.createReview = async (req, res, next) => {
             { $limit: 1 }
         ], 
 
-        //Save results to workspace
         async (err, result) => {
-            workspace.averageLightingLevel = result[0].avgLightingLevel;
-            workspace.averageNoiseLevel = result[0].avgNoiseLevel;
-            workspace.averageWifiAvailability = result[0].avgWifiAvailability;
-            workspace.averageSpaceAvailable = result[0].avgSpaceAvailable;
+            workspace.averageLightingLevel = result.length > 0 ? result[0].avgLightingLevel : null;
+            workspace.averageNoiseLevel = result.length > 0 ? result[0].avgNoiseLevel : null;
+            workspace.averageWifiAvailability = result.length > 0 ? result[0].avgWifiAvailability: null;
+            workspace.averageSpaceAvailable = result.length > 0 ? result[0].avgSpaceAvailable : null;
         });
-
-    await workspace.save();
-
-    req.flash("success", "Your review has been added successfully.");
-    res.redirect(`/workspaces/${id}`);
-};
-
-module.exports.deleteReview = async (req, res) => {
-    const { id, reviewID } = req.params;
-    await Workspace.findByIdAndUpdate(id, { $pull: { reviews: reviewID } });
-    await Review.findByIdAndDelete(reviewID);
-    req.flash("success", "Review has been successfully deleted.");
-    res.redirect(`/workspaces/${id}`);
-};
+}
 
 module.exports.renderNewReviewForm = async (req, res) => {
     const { id } = req.params;
