@@ -25,7 +25,7 @@ module.exports.deleteReview = async (req, res) => {
 
     workspace.update({ $pull: { reviews: reviewID } });
     await Review.findByIdAndDelete(reviewID);
-    workspace.reviews = workspace.reviews.filter(review => review !== reviewID);
+    workspace.reviews = workspace.reviews.filter(review => !review.equals(reviewID));
     await SetAggregatesOnWorkspace(workspace);
     workspace.save(); 
 
@@ -36,16 +36,12 @@ module.exports.deleteReview = async (req, res) => {
 //TODO: Refactor. Logic to delete attributes on workspace should probably be moved to workspace model. 
 async function SetAggregatesOnWorkspace (workspace){
     if (workspace.reviews.length < 1) {
-        console.log("This workspace has no reviews!");
         return workspace.update({ $unset: { 
             averageLightingLevel: "", 
             averageNoiseLevel: "", 
             averageWifiAvailability: "", 
             averageSpaceAvailable: "" } 
         }); 
-    }
-    else{
-        console.log(`This workspace has ${workspace.reviews.length} reviews!`);
     }
     
     await Review.aggregate(
